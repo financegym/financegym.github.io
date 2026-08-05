@@ -20,12 +20,14 @@ var FG_REF = {
 };
 
 window.FG_LEADERBOARD = [
-  { system: "Claude-Opus-5 · ReAct",              ref: FG_REF.react,      overall: 42.3, hindsight: 57.7, foresight: 18.5, se: 0.9, ours: true },
-  { system: "Gemini-3.1-Pro · FinanceHarness",    ref: FG_REF.harness,    overall: 35.0, hindsight: 50.5, foresight: 11.5, se: 0.8, ours: true },
-  { system: "Gemini-3-Flash · FinanceHarness",    ref: FG_REF.harness,    overall: 34.9, hindsight: 50.4, foresight: 10.6, se: 0.8, ours: true },
+  { system: "Claude-Opus-5 · FinanceHarness",     ref: FG_REF.harness,    overall: 44.9, hindsight: 63.8, foresight: 15.7, se: 0.9 },
+  { system: "Claude-Opus-4.7 · FinanceHarness",   ref: FG_REF.harness,    overall: 40.0, hindsight: 57.9, foresight: 12.6, se: 0.9 },
+  { system: "Claude-Opus-4.8 · FinanceHarness",   ref: FG_REF.harness,    overall: 38.3, hindsight: 55.2, foresight: 11.9, se: 0.9 },
+  { system: "Gemini-3.1-Pro · FinanceHarness",    ref: FG_REF.harness,    overall: 35.0, hindsight: 50.5, foresight: 11.5, se: 0.8 },
+  { system: "Gemini-3-Flash · FinanceHarness",    ref: FG_REF.harness,    overall: 34.9, hindsight: 50.4, foresight: 10.6, se: 0.8 },
   { system: "Claude-Opus-4.7 · ReAct",            ref: FG_REF.react,      overall: 34.1, hindsight: 50.1, foresight: 9.9,  se: 0.8 },
   { system: "Gemini-3.1-Pro · ReAct",             ref: FG_REF.react,      overall: 33.2, hindsight: 46.8, foresight: 12.8, se: 0.7 },
-  { system: "Qwen3.6-27B · FinanceHarness",       ref: FG_REF.harness,    overall: 32.4, hindsight: 45.7, foresight: 11.8, se: 0.8, ours: true },
+  { system: "Qwen3.6-27B · FinanceHarness",       ref: FG_REF.harness,    overall: 32.4, hindsight: 45.7, foresight: 11.8, se: 0.8 },
   { system: "GPT-5.5 · ReAct",                    ref: FG_REF.react,      overall: 31.8, hindsight: 47.5, foresight: 8.0,  se: 0.7 },
   { system: "Gemini-3-Flash · TTD-DR",            ref: FG_REF.ttddr,      overall: 31.5, hindsight: 45.5, foresight: 9.8,  se: 0.7 },
   { system: "GLM-5 · ReAct",                      ref: FG_REF.react,      overall: 30.4, hindsight: 44.7, foresight: 8.5,  se: 0.9 },
@@ -57,6 +59,13 @@ window.FG_LEADERBOARD = [
         "</span>" +
       "</span>"
     );
+  }
+
+  // FinanceHarness is named in blue wherever it appears in a system name — the
+  // same blue the page uses for emphasis elsewhere. It replaces the old "ours"
+  // badge, so identity is carried by the name itself rather than a row flag.
+  function fhName(system) {
+    return system.replace("FinanceHarness", '<span class="fh">FinanceHarness</span>');
   }
 
   function refLink(ref) {
@@ -91,9 +100,9 @@ window.FG_LEADERBOARD = [
 
     tbody.innerHTML = view.map(function (r) {
       return (
-        '<tr' + (r.ours ? ' class="is-ours"' : "") + ">" +
+        "<tr>" +
           '<td class="rank">' + rankOf[r.system] + "</td>" +
-          '<td class="system">' + r.system + "</td>" +
+          '<td class="system">' + fhName(r.system) + "</td>" +
           '<td class="num">' + bar(r.overall) + "</td>" +
           '<td class="num">' + r.hindsight.toFixed(1) + "</td>" +
           '<td class="num">' + r.foresight.toFixed(1) + "</td>" +

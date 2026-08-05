@@ -183,6 +183,14 @@ main section + section {
 .btn-primary { background: var(--accent); border-color: transparent; color: #fff; }
 .btn-primary:hover { background: var(--accent-ink); color: #fff; }
 
+/* Leading icons in the hero CTAs. They inherit the label's colour via
+   currentColor, so one rule covers both themes and the hover state. .btn is
+   already an inline-flex row with a gap, so no extra spacing is needed. */
+.btn-ico {
+  width: 1.05em; height: 1.05em; flex: none;
+  transform: translateY(0.5px);
+}
+
 .stats {
   display: grid; gap: 1px; margin-top: 2rem;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -215,7 +223,10 @@ main section + section {
 }
 .callout.is-critical { border-left-color: var(--critical); }
 .callout.is-good { border-left-color: var(--good); }
-.callout h3 { display: flex; align-items: center; gap: .5rem; }
+/* Callout headings sit at whatever level their nesting requires (h4 inside a
+   numbered step, h3 at section level) — style both. */
+.callout h3, .callout h4 { display: flex; align-items: center; gap: .5rem;
+  font-size: 1.05rem; margin-top: 0; }
 .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
 .callout .mark { font-size: 1rem; line-height: 1; }
 .callout.is-critical .mark { color: var(--critical); }
@@ -228,13 +239,6 @@ main section + section {
   padding: .12rem .5rem; border-radius: 999px;
   border: 1px solid var(--border); background: var(--surface-2);
   color: var(--text-secondary); font-size: .75rem; font-weight: 550;
-}
-.badge-placeholder {
-  display: inline-block; margin-left: .4rem;
-  padding: .05rem .4rem; border-radius: 5px;
-  background: var(--surface-2); border: 1px dashed var(--baseline);
-  color: var(--text-muted); font-size: .7rem; font-weight: 600;
-  letter-spacing: .04em; text-transform: uppercase; vertical-align: middle;
 }
 
 /* --- controls --------------------------------------------------------- */
@@ -282,12 +286,9 @@ tbody tr:hover td { background: var(--surface-2); }
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rank { color: var(--text-muted); font-variant-numeric: tabular-nums; width: 3rem; }
 .system { font-weight: 550; white-space: nowrap; }
-tr.is-ours .system { color: var(--text-primary); }
-tr.is-ours .system::after {
-  content: "ours"; margin-left: .45rem;
-  font-size: .65rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--accent-ink); vertical-align: middle;
-}
+/* FinanceHarness is named in the page's emphasis blue wherever it appears in a
+   system name. This carries identity in place of the removed "ours" badge. */
+.system .fh { color: #1a6fd4; font-weight: 640; }
 th button {
   font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
   background: none; border: 0; padding: 0; cursor: pointer;
@@ -418,16 +419,19 @@ th .sort-mark { color: var(--accent); font-size: .7rem; }
   fill: none; stroke: var(--baseline); stroke-width: 1.5;
   stroke-dasharray: 5 4; stroke-linejoin: round;
 }
-.pareto-svg .frontier-label { fill: var(--text-muted); font-size: 11px; font-style: italic; }
 
-.pareto-svg .m { stroke: var(--surface-1); stroke-width: 1.5; }
-.pareto-svg .m-harness { fill: var(--s1); }
-.pareto-svg .m-react   { fill: var(--s2); }
-.pareto-svg .m-agentic { fill: var(--s3); }
-.pareto-svg .m-tuned   { fill: var(--s4); }
+/* Marks are styled in both places they appear — the plot and the legend swatch.
+   One declaration block per rule, two scopes, so the legend cannot drift from
+   the chart. (Legend swatches are bare <svg>, not .pareto-svg, which is why the
+   chart-only scope silently left them unstyled.) */
+.pareto-svg .m, .legend .m { stroke: var(--surface-1); stroke-width: 1.5; }
+.pareto-svg .m-harness, .legend .m-harness { fill: var(--s1); }
+.pareto-svg .m-react,   .legend .m-react   { fill: var(--s2); }
+.pareto-svg .m-agentic, .legend .m-agentic { fill: var(--s3); }
+.pareto-svg .m-tuned,   .legend .m-tuned   { fill: var(--s4); }
 /* Emphasised points carry a surface ring so they read as a second encoding,
    not a fifth hue. */
-.pareto-svg .m-emph { stroke: var(--text-primary); stroke-width: 2; }
+.pareto-svg .m-emph, .legend .m-emph { stroke: var(--text-primary); stroke-width: 2; }
 
 /* Labels wear text ink, never the series colour. */
 .pareto-svg .plabel { fill: var(--text-secondary); font-size: 11px; }
@@ -455,21 +459,20 @@ th .sort-mark { color: var(--accent); font-size: .7rem; }
   font-style: normal; letter-spacing: .05em;
 }
 
-/* Desirable region — high score, low cost. Background, not a series: it is the
-   one neutral hue on the chart so it can never be mistaken for a fifth group. */
+/* Direction-of-good wash across the whole plot: deepest at the top-right (high
+   score, low cost), fading to nothing at the bottom-left. Background, not a
+   series — it is the one neutral tone here, so it can never be mistaken for a
+   fifth group. Ceiling stays low so marks and gridlines keep their contrast. */
 .pareto-svg .better-zone { fill: url(#better-glow); }
-.pareto-svg .bg-near { stop-color: var(--text-primary); stop-opacity: .085; }
-.pareto-svg .bg-mid  { stop-color: var(--text-primary); stop-opacity: .038; }
+.pareto-svg .bg-near { stop-color: var(--text-primary); stop-opacity: .105; }
+.pareto-svg .bg-mid  { stop-color: var(--text-primary); stop-opacity: .042; }
 .pareto-svg .bg-far  { stop-color: var(--text-primary); stop-opacity: 0; }
-.pareto-svg .better-edge {
-  stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 4; opacity: .45;
-}
 
 /* --- point hover ------------------------------------------------------ */
 /* Only the hit targets take pointer events; everything else is decoration and
    must not swallow a hover meant for a mark underneath it. */
 .pareto-svg .grid, .pareto-svg .axis, .pareto-svg .tick, .pareto-svg .axis-title,
-.pareto-svg .frontier, .pareto-svg .frontier-label, .pareto-svg .plabel,
+.pareto-svg .frontier, .pareto-svg .plabel,
 .pareto-svg .leader, .pareto-svg .better, .pareto-svg .better-zone,
 .pareto-svg .better-edge { pointer-events: none; }
 
@@ -574,10 +577,12 @@ th .sort-mark { color: var(--accent); font-size: .7rem; }
   :root:where(:not([data-theme="light"])) .hero h1 .gym { color: #1E90FF; }
   :root:where(:not([data-theme="light"])) .hero .subtitle { color: #6BB1FF; }
   :root:where(:not([data-theme="light"])) .hl-blue { color: #6BB1FF; }
+  :root:where(:not([data-theme="light"])) .system .fh { color: #6BB1FF; }
 }
 :root[data-theme="dark"] .hero h1 .gym { color: #1E90FF; }
 :root[data-theme="dark"] .hero .subtitle { color: #6BB1FF; }
 :root[data-theme="dark"] .hl-blue { color: #6BB1FF; }
+:root[data-theme="dark"] .system .fh { color: #6BB1FF; }
 
 /* --- leaderboard system links ----------------------------------------- */
 /* Identity stays with the row's text; the link is a quiet secondary action,
@@ -595,3 +600,62 @@ th .sort-mark { color: var(--accent); font-size: .7rem; }
 .ref-link:hover,
 .ref-link:focus-visible { border-bottom-color: currentColor; }
 .ref-link .ext { font-size: .78em; opacity: .6; }
+
+/* --- tabbed panels ---------------------------------------------------- */
+.tabs { margin-top: 1.25rem; }
+.tablist {
+  display: flex; gap: .25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.1rem;
+}
+.tablist [role="tab"] {
+  appearance: none; background: none; border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: .5rem .8rem;
+  font: inherit; font-size: .9rem; font-weight: 550;
+  color: var(--text-secondary); cursor: pointer;
+}
+.tablist [role="tab"]:hover { color: var(--text-primary); }
+/* Selection is carried by the underline plus the ink step, never by hue alone. */
+.tablist [role="tab"][aria-selected="true"] {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+.tabpanel > :first-child { margin-top: 0; }
+.tabpanel table { margin-top: 0; }
+
+/* A control that reads as prose — used for the in-text tab pointer. */
+.linklike {
+  appearance: none; background: none; border: 0; padding: 0;
+  font: inherit; color: var(--accent-ink); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.linklike:hover { color: var(--accent); }
+
+/* Nested options inside a numbered step — numbered, but visually lighter than
+   the steps they sit under. */
+.substeps {
+  margin: .35rem 0 1rem;
+  padding-left: 1.35rem;
+  color: var(--text-secondary);
+}
+.substeps li { margin-bottom: .45rem; }
+.substeps li::marker { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* Field-reference tables: keep the Type column on one line. `string
+   YYYY-MM-DD` was wrapping to two rows and making the row taller than its
+   neighbours. nowrap lets the column claim the width it needs; the Description
+   column absorbs the difference since it is the one that should wrap. */
+.fields td:nth-child(2),
+.fields th:nth-child(2) { white-space: nowrap; }
+
+/* The frontier chart is a distinct block inside the leaderboard section now
+   that it is no longer a section of its own — give it the same rule-and-gap
+   separation the page uses between sections. */
+.pareto-block {
+  margin-top: 2.75rem;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--border);
+}
+.pareto-block > h3 { margin-bottom: .5rem; }
