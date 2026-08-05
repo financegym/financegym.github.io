@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinanceGym — point-in-time finance deep-research benchmark</title>
+<meta name="description" content="FinanceGym is a point-in-time agentic finance research benchmark: 400 expert-annotated questions with publication-date cutoffs and a rubric judge. Leaderboard, data, and submission instructions on one page.">
+<link rel="stylesheet" href="assets/style.css?v=12">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>📈</text></svg>">
+<script src="assets/site.js?v=12" defer></script>
+<script src="assets/leaderboard.js?v=12" defer></script>
+<script src="assets/pareto.js?v=12" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <nav class="nav" aria-label="On this page">
+      <a href="#how">How it works</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#pareto">Cost</a>
+      <a href="#data">Data</a>
+      <a href="#submit">Submit</a>
+      <a href="#grading">Grading</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <section class="hero" id="top">
+      <h1>Finance<span class="gym">Gym</span></h1>
+      <p class="subtitle">Point-in-time financial deep research benchmark</p>
+      <p class="lede">
+        FinanceGym gives an agent a finance research question and a <strong>cutoff date</strong>.
+        The agent may only retrieve documents <strong>published on or before that date</strong>,
+        then writes a cited report. Reports are graded against expert rubrics that separate
+        what was <em>knowable</em> at the cutoff from what actually <em>happened</em> afterwards.
+        How the questions and rubrics are generated and validated is explained in
+        <a href="https://arxiv.org/pdf/2607.27853">the paper</a>.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym/data">Get the data&nbsp;↗</a>
+        <a class="btn" href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym">GitHub repository&nbsp;↗</a>
+        <a class="btn" href="https://arxiv.org/pdf/2607.27853">Paper&nbsp;↗</a>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="value">400</span><span class="label">public questions</span></div>
+        <div class="stat"><span class="value">2,464</span><span class="label">expert rubric items</span></div>
+        <div class="stat"><span class="value">1.2</span><span class="label">avg. financial-expert hours per question and its rubrics</span></div>
+        <div class="stat"><span class="value">0–4</span><span class="label">rubric scale, normalized to&nbsp;%</span></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>How the benchmark works</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>1. Retrieve, point-in-time</h3>
+          <p>
+            Every retrieval call is bounded by the task's cutoff date, so no document published
+            after it can enter the evidence set. Enforcing that at the source is the benchmark's
+            one hard rule.
+          </p>
+        </div>
+        <div class="card">
+          <h3>2. Write a cited report</h3>
+          <p>
+            Any agent architecture is allowed — any loop, any planner, any backbone model. <span class="hl-blue">The
+            single hard rule is point-in-time compliance on retrieval.</span>
+          </p>
+        </div>
+        <div class="card">
+          <h3>3. Graded on two axes</h3>
+          <p>
+            <strong>Pre-cutoff</strong> scores antecedent items against evidence available at the cutoff.
+            <strong>Post-cutoff</strong> scores consequent items against what happened after. Rubrics
+            stay withheld to prevent rubric hacking.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="leaderboard">
+      <h2>Leaderboard</h2>
+      <p class="lede">
+        Normalized rubric means (%) over the 400-question set. <strong>Pre-cutoff</strong> =
+        grounding in evidence available at the cutoff, <strong>Post-cutoff</strong> = reasoning about what followed, <strong>±SE</strong>
+        = standard error of the Overall mean. <strong>System link</strong> points at the paper or
+        repository for the agent framework the row runs on. Rank always reflects the overall
+        standing, whatever column you sort by.
+      </p>
+
+      <div class="controls">
+        <span class="result-count" id="lb-count" role="status"></span>
+      </div>
+
+      <div class="table-scroll">
+        <table id="lb-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col" data-sort="system"><button type="button">System <span class="sort-mark"></span></button></th>
+              <th scope="col" data-sort="overall" class="num"><button type="button">Overall <span class="sort-mark"></span></button></th>
+              <th scope="col" data-sort="hindsight" class="num"><button type="button">Pre-cutoff <span class="sort-mark"></span></button></th>
+              <th scope="col" data-sort="foresight" class="num"><button type="button">Post-cutoff <span class="sort-mark"></span></button></th>
+              <th scope="col" data-sort="se" class="num"><button type="button">±SE <span class="sort-mark"></span></button></th>
+              <th scope="col" data-sort="ref"><button type="button">System link <span class="sort-mark"></span></button></th>
+            </tr>
+          </thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+      </div>
+
+      <p class="footnote" style="margin-top:.9rem">
+        Post-cutoff scores sit far below pre-cutoff for every system — anticipating consequences from
+        pre-cutoff evidence alone is the open problem this benchmark exists to measure. Per-topic,
+        per-sector, and per-reasoning-type breakdowns are in the paper appendix.
+      </p>
+    </section>
+
+    <section id="pareto">
+      <h2>Cost–quality frontier</h2>
+      <p class="lede">
+        Overall rubric score against estimated cost per query. The x-axis runs
+        high&nbsp;→&nbsp;low left to right, so <strong>up and to the right is
+        better</strong>, and the staircase marks the efficient set — nothing
+        cheaper scores higher. Hover or focus any point for its numbers.
+      </p>
+
+      <div class="legend">
+          <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><circle cx="0.0" cy="0.0" r="5" class="m m-harness"/></svg>FinanceHarness</span>
+          <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><rect x="-4.5" y="-4.5" width="9.0" height="9.0" rx="1.5" class="m m-react"/></svg>ReAct</span>
+          <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><polygon points="0.0,-6.8 6.1,4.4 -6.1,4.4" class="m m-agentic"/></svg>Other agentic systems</span>
+          <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><polygon points="0.0,-6.8 6.8,0.0 0.0,6.8 -6.8,0.0" class="m m-tuned"/></svg>Finetuned DR agent</span>
+      </div>
+
+      <div class="pareto-wrap">
+        <svg viewBox="0 0 780 470" class="pareto-svg" role="group" aria-label="Overall rubric score against cost per query for 21 systems; lower cost is to the right, so systems toward the top right are better on both axes.">
+<defs><radialGradient id="better-glow" gradientUnits="userSpaceOnUse" cx="760" cy="22" r="300"><stop offset="0" class="bg-near"/><stop offset="0.55" class="bg-mid"/><stop offset="1" class="bg-far"/></radialGradient></defs>
+<polygon points="760,22 500,22 760,240" class="better-zone"/>
+<line x1="500" y1="22" x2="760" y2="240" class="better-edge"/>
+<line x1="62" y1="359.7" x2="760" y2="359.7" class="grid"/>
+<text x="52" y="363.7" class="tick tick-y">20</text>
+<line x1="62" y1="289.4" x2="760" y2="289.4" class="grid"/>
+<text x="52" y="293.4" class="tick tick-y">25</text>
+<line x1="62" y1="219.0" x2="760" y2="219.0" class="grid"/>
+<text x="52" y="223.0" class="tick tick-y">30</text>
+<line x1="62" y1="148.6" x2="760" y2="148.6" class="grid"/>
+<text x="52" y="152.6" class="tick tick-y">35</text>
+<line x1="62" y1="78.3" x2="760" y2="78.3" class="grid"/>
+<text x="52" y="82.3" class="tick tick-y">40</text>
+<line x1="714.6" y1="22" x2="714.6" y2="416" class="grid grid-v"/>
+<text x="714.6" y="436" class="tick tick-x">$0.03</text>
+<line x1="639.9" y1="22" x2="639.9" y2="416" class="grid grid-v"/>
+<text x="639.9" y="436" class="tick tick-x">$0.05</text>
+<line x1="538.5" y1="22" x2="538.5" y2="416" class="grid grid-v"/>
+<text x="538.5" y="436" class="tick tick-x">$0.1</text>
+<line x1="437.2" y1="22" x2="437.2" y2="416" class="grid grid-v"/>
+<text x="437.2" y="436" class="tick tick-x">$0.2</text>
+<line x1="377.9" y1="22" x2="377.9" y2="416" class="grid grid-v"/>
+<text x="377.9" y="436" class="tick tick-x">$0.3</text>
+<line x1="303.1" y1="22" x2="303.1" y2="416" class="grid grid-v"/>
+<text x="303.1" y="436" class="tick tick-x">$0.5</text>
+<line x1="201.8" y1="22" x2="201.8" y2="416" class="grid grid-v"/>
+<text x="201.8" y="436" class="tick tick-x">$1</text>
+<line x1="100.4" y1="22" x2="100.4" y2="416" class="grid grid-v"/>
+<text x="100.4" y="436" class="tick tick-x">$2</text>
+<line x1="62" y1="416" x2="760" y2="416" class="axis"/>
+<path d="M 276.0 45.9 L 366.1 45.9 L 366.1 148.6 L 514.3 148.6 L 514.3 150.1 L 601.5 150.1 L 601.5 185.2 L 613.3 185.2 L 613.3 213.4 L 692.1 213.4 L 692.1 244.3 L 714.6 244.3 L 714.6 279.5" class="frontier"/>
+<text x="276.0" y="21.9" class="frontier-label" text-anchor="middle">efficient frontier</text>
+<g class="pt" tabindex="0" role="img" aria-label="Gemma-4-26B, ReAct: overall 25.7 percent, $0.030 per query" data-label="Gemma-4-26B" data-group="react" data-gname="ReAct" data-score="25.7" data-cost="0.030">
+<circle cx="714.6" cy="279.5" r="13" class="hit"/>
+<rect x="710.1" y="275.0" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="Tongyi-DR, Finetuned DR agent: overall 28.2 percent, $0.035 per query" data-label="Tongyi-DR" data-group="tuned" data-gname="Finetuned DR agent" data-score="28.2" data-cost="0.035">
+<circle cx="692.1" cy="244.3" r="13" class="hit"/>
+<polygon points="692.1,237.6 698.8,244.3 692.1,251.1 685.3,244.3" class="m m-tuned"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="OpenResearcher, Finetuned DR agent: overall 27.2 percent, $0.035 per query" data-label="OpenResearcher" data-group="tuned" data-gname="Finetuned DR agent" data-score="27.2" data-cost="0.035">
+<circle cx="692.1" cy="258.4" r="13" class="hit"/>
+<polygon points="692.1,251.7 698.8,258.4 692.1,265.2 685.3,258.4" class="m m-tuned"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="MiroThinker, Finetuned DR agent: overall 21.2 percent, $0.035 per query" data-label="MiroThinker" data-group="tuned" data-gname="Finetuned DR agent" data-score="21.2" data-cost="0.035">
+<circle cx="692.1" cy="342.8" r="13" class="hit"/>
+<polygon points="692.1,336.1 698.8,342.8 692.1,349.6 685.3,342.8" class="m m-tuned"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="gpt-oss-120b, ReAct: overall 18.7 percent, $0.040 per query" data-label="gpt-oss-120b" data-group="react" data-gname="ReAct" data-score="18.7" data-cost="0.040">
+<circle cx="672.6" cy="378.0" r="13" class="hit"/>
+<rect x="668.1" y="373.5" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="GPT-Researcher, Other agentic systems: overall 30.4 percent, $0.060 per query" data-label="GPT-Researcher" data-group="agentic" data-gname="Other agentic systems" data-score="30.4" data-cost="0.060">
+<circle cx="613.3" cy="213.4" r="13" class="hit"/>
+<polygon points="613.3,206.6 619.3,217.8 607.2,217.8" class="m m-agentic"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="FinanceHarness (Qwen3.6-27B), FinanceHarness: overall 32.4 percent, $0.065 per query" data-label="FinanceHarness (Qwen3.6-27B)" data-group="harness" data-gname="FinanceHarness" data-score="32.4" data-cost="0.065">
+<circle cx="601.5" cy="185.2" r="13" class="hit"/>
+<circle cx="601.5" cy="185.2" r="5" class="m m-harness"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="DeepSeek-v3.2, ReAct: overall 28.9 percent, $0.080 per query" data-label="DeepSeek-v3.2" data-group="react" data-gname="ReAct" data-score="28.9" data-cost="0.080">
+<circle cx="571.2" cy="234.5" r="13" class="hit"/>
+<rect x="566.7" y="230.0" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="Qwen3-235B-A22B, ReAct: overall 26.8 percent, $0.080 per query" data-label="Qwen3-235B-A22B" data-group="react" data-gname="ReAct" data-score="26.8" data-cost="0.080">
+<circle cx="571.2" cy="264.0" r="13" class="hit"/>
+<rect x="566.7" y="259.5" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="GLM-5, ReAct: overall 30.4 percent, $0.150 per query" data-label="GLM-5" data-group="react" data-gname="ReAct" data-score="30.4" data-cost="0.150">
+<circle cx="479.2" cy="213.4" r="13" class="hit"/>
+<rect x="474.7" y="208.9" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="STORM, Other agentic systems: overall 27.4 percent, $0.200 per query" data-label="STORM" data-group="agentic" data-gname="Other agentic systems" data-score="27.4" data-cost="0.200">
+<circle cx="437.2" cy="255.6" r="13" class="hit"/>
+<polygon points="437.2,248.8 443.2,260.0 431.1,260.0" class="m m-agentic"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="Gemini-3-Flash, ReAct: overall 30.2 percent, $0.200 per query" data-label="Gemini-3-Flash" data-group="react" data-gname="ReAct" data-score="30.2" data-cost="0.200">
+<circle cx="437.2" cy="216.2" r="13" class="hit"/>
+<rect x="432.7" y="211.7" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="deepagents, Other agentic systems: overall 28.1 percent, $0.300 per query" data-label="deepagents" data-group="agentic" data-gname="Other agentic systems" data-score="28.1" data-cost="0.300">
+<circle cx="377.9" cy="245.7" r="13" class="hit"/>
+<polygon points="377.9,238.9 383.9,250.1 371.8,250.1" class="m m-agentic"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="OpenClaw, Other agentic systems: overall 27.7 percent, $0.350 per query" data-label="OpenClaw" data-group="agentic" data-gname="Other agentic systems" data-score="27.7" data-cost="0.350">
+<circle cx="355.3" cy="251.4" r="13" class="hit"/>
+<polygon points="355.3,244.5 361.4,255.8 349.3,255.8" class="m m-agentic"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="TTD-DR, Other agentic systems: overall 31.5 percent, $0.500 per query" data-label="TTD-DR" data-group="agentic" data-gname="Other agentic systems" data-score="31.5" data-cost="0.500">
+<circle cx="303.1" cy="197.9" r="13" class="hit"/>
+<polygon points="303.1,191.1 309.2,202.3 297.1,202.3" class="m m-agentic"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="Gemini-3.1-Pro, ReAct: overall 33.2 percent, $0.800 per query" data-label="Gemini-3.1-Pro" data-group="react" data-gname="ReAct" data-score="33.2" data-cost="0.800">
+<circle cx="234.4" cy="174.0" r="13" class="hit"/>
+<rect x="229.9" y="169.5" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="Claude-Opus-4.7, ReAct: overall 34.1 percent, $1.950 per query" data-label="Claude-Opus-4.7" data-group="react" data-gname="ReAct" data-score="34.1" data-cost="1.950">
+<circle cx="104.1" cy="161.3" r="13" class="hit"/>
+<rect x="99.6" y="156.8" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="GPT-5.5, ReAct: overall 31.8 percent, $2.000 per query" data-label="GPT-5.5" data-group="react" data-gname="ReAct" data-score="31.8" data-cost="2.000">
+<circle cx="100.4" cy="193.7" r="13" class="hit"/>
+<rect x="95.9" y="189.2" width="9.0" height="9.0" rx="1.5" class="m m-react"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="FinanceHarness · gemini-3-flash, FinanceHarness: overall 34.9 percent, $0.118 per query" data-label="FinanceHarness · gemini-3-flash" data-group="harness" data-gname="FinanceHarness" data-score="34.9" data-cost="0.118">
+<circle cx="514.3" cy="150.1" r="13" class="hit"/>
+<circle cx="514.3" cy="150.1" r="7" class="m m-harness m-emph"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="FinanceHarness · gemini-3.1-pro, FinanceHarness: overall 35.0 percent, $0.325 per query" data-label="FinanceHarness · gemini-3.1-pro" data-group="harness" data-gname="FinanceHarness" data-score="35.0" data-cost="0.325">
+<circle cx="366.1" cy="148.6" r="13" class="hit"/>
+<circle cx="366.1" cy="148.6" r="7" class="m m-harness m-emph"/>
+</g>
+<g class="pt" tabindex="0" role="img" aria-label="ReAct · claude-opus-5, ReAct: overall 42.3 percent, $0.602 per query" data-label="ReAct · claude-opus-5" data-group="react" data-gname="ReAct" data-score="42.3" data-cost="0.602">
+<circle cx="276.0" cy="45.9" r="13" class="hit"/>
+<rect x="269.7" y="39.6" width="12.6" height="12.6" rx="1.5" class="m m-react m-emph"/>
+</g>
+<text x="526.3" y="154.1" text-anchor="start" class="plabel plabel-emph">FinanceHarness · gemini-3-flash</text>
+<line x1="370.1" y1="148.6" x2="376.1" y2="135.6" class="leader"/>
+<text x="378.1" y="139.6" text-anchor="start" class="plabel plabel-emph">FinanceHarness · gemini-3.1-pro</text>
+<text x="288.0" y="49.9" text-anchor="start" class="plabel plabel-emph">ReAct · claude-opus-5</text>
+<text x="680.1" y="248.3" text-anchor="end" class="plabel">Tongyi-DR</text>
+<text x="601.3" y="217.4" text-anchor="end" class="plabel">GPT-Researcher</text>
+<text x="589.5" y="189.2" text-anchor="end" class="plabel">FinanceHarness (Qwen3.6-27B)</text>
+<text x="315.1" y="201.9" text-anchor="start" class="plabel">TTD-DR</text>
+<text x="246.4" y="178.0" text-anchor="start" class="plabel">Gemini-3.1-Pro</text>
+<text x="116.1" y="165.3" text-anchor="start" class="plabel">Claude-Opus-4.7</text>
+<text x="112.4" y="197.7" text-anchor="start" class="plabel">GPT-5.5</text>
+<g class="better"><text x="673" y="95" class="better-label" text-anchor="middle">efficient zone</text></g>
+<text x="411" y="462" class="axis-title">estimated cost per query (log scale) — cheaper to the right</text>
+<text transform="translate(16 219) rotate(-90)" class="axis-title">overall rubric score (%)</text>
+</svg>
+        <div class="pareto-tip" id="pareto-tip" role="tooltip" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section id="data">
+      <h2>The data</h2>
+      <p class="lede">
+        Everything public lives in the repository — the question set is not mirrored here, so there
+        is exactly one copy of it and it can never drift out of date.
+      </p>
+
+      <div class="cta-row" style="margin-top:1.25rem">
+        <a class="btn btn-primary" href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym/data">Browse&nbsp;<code>FinanceGym/data</code>&nbsp;↗</a>
+        <a class="btn" href="https://raw.githubusercontent.com/google-research/google-research/master/finance_harness/FinanceGym/data/benchmark_400_public.jsonl">Download&nbsp;<code>benchmark_400_public.jsonl</code>&nbsp;↗</a>
+        <a class="btn" href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym">Code, docs &amp; issues&nbsp;↗</a>
+      </div>
+
+      <p style="margin-top:1.5rem">
+        <code>benchmark_400_public.jsonl</code> holds 400 tasks, one JSON object per line. Cutoffs
+        span 2024-12-31 to 2025-11-10 across 31 distinct dates.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Fields in each line of <code>benchmark_400_public.jsonl</code>.</caption>
+          <thead>
+            <tr><th scope="col">Field</th><th scope="col">Type</th><th scope="col">Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>task_id</code></td><td>string</td>
+              <td>Stable unique id for the question. Handy for your own bookkeeping; not used for matching.</td>
+            </tr>
+            <tr>
+              <td><code>question</code></td><td>string</td>
+              <td>The research question. <strong>Used verbatim</strong> to match your submission to
+                  its withheld rubric — copy it exactly, with no truncation, re-wording, or added
+                  point-in-time framing.</td>
+            </tr>
+            <tr>
+              <td><code>cutoff</code></td><td>string <code>YYYY-MM-DD</code></td>
+              <td>The point-in-time date. Only information available on or before this date may inform the report.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="footnote" style="margin-top:.9rem">
+        Rubrics are not part of the public file — this prevents score hacking. Grading runs against
+        a private full-rubric set; see <a href="#grading">how grading works</a>.
+      </p>
+    </section>
+
+    <section id="submit">
+      <h2>Run the benchmark, submit a report</h2>
+      <p class="lede">
+        Five steps: get the questions, set up cutoff-enforced retrieval, run your agent
+        under the no-leakage rule, format an <code>answers.jsonl</code>, and send it to the
+        maintainers. We run the judge and post your row on the
+        <a href="#leaderboard">leaderboard</a>.
+      </p>
+
+      <ol class="steps" style="margin-top:2rem">
+
+        <li>
+          <h3>Get the questions</h3>
+          <p>
+            Take <code>benchmark_400_public.jsonl</code> from
+            <a href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym/data"><code>FinanceGym/data</code></a>
+            in the repository — see <a href="#data">the data section</a> above for the field
+            reference.
+          </p>
+          <p>
+            <a class="btn" href="https://raw.githubusercontent.com/google-research/google-research/master/finance_harness/FinanceGym/data/benchmark_400_public.jsonl">Download&nbsp;<code>benchmark_400_public.jsonl</code>&nbsp;↗</a>
+          </p>
+        </li>
+
+        <li>
+          <h3>Bring a point-in-time retrieval setup</h3>
+          <p>
+            The retrieval environment used for the published results is
+            <strong>not distributed</strong>: the underlying documents are licensed
+            <abbr title="Creative Commons Attribution-NonCommercial 4.0">CC&nbsp;BY-NC&nbsp;4.0</abbr>,
+            which does not permit us to redistribute the corpus.
+          </p>
+          <p>
+            Run your agent against whatever retrieval you like — your own index, a
+            search API, an internal corpus — subject to one hard rule: it must
+            return only documents <strong>published on or before the task's
+            cutoff</strong>. How you enforce that is up to you; the self-check
+            below is what we ask you to attest to.
+          </p>
+          <p class="footnote">
+            Scores from a different corpus are not directly comparable to the
+            published rows, which all share one retriever. Submissions are listed
+            with the retrieval setup they used.
+          </p>
+        </li>
+
+        <li>
+          <h3>Run your agent — point-in-time, no leakage</h3>
+          <p>
+            Any agent architecture is allowed: any loop, any planner, any backbone model. There is
+            exactly one hard rule, and it is about retrieval.
+          </p>
+
+          <div class="callout is-critical">
+            <h3><span class="mark" aria-hidden="true">●</span> The hard rule: <code>max_date</code> is mandatory</h3>
+            <p>
+              Every single <code>/search</code> call must carry <code>max_date</code> = that task's
+              <code>cutoff</code>. The server then never returns a document published after the
+              cutoff. Omitting it — even on one exploratory query — voids point-in-time compliance
+              for the whole run.
+            </p>
+          </div>
+
+          <p>Whatever your retrieval is, the cutoff travels with every query:</p>
+          <div class="code-block">
+            <button class="copy-btn" type="button" data-copy="@prev">copy</button>
+<pre><code>def search(query: str, k: int, cutoff: str) -&gt; list[dict]:
+    """Your retrieval, with the task cutoff applied at the source."""
+    hits = my_retriever.search(query, k=k, max_date=cutoff)   # &lt;- never omit
+    for h in hits:                       # verify on the way back, too
+        assert h["pub_date"][:10] &lt;= cutoff, f"leak: {h['id']} @ {h['pub_date']}"
+    return hits</code></pre>
+          </div>
+
+          <h4>Post-cutoff self-check</h4>
+          <p>
+            The server enforces the cutoff, but leakage can still enter through your own harness.
+            Run these four checks before you submit — they are what we ask you to attest to on the
+            submission form.
+          </p>
+          <div class="table-scroll" style="margin-bottom:1rem">
+            <table>
+              <thead>
+                <tr><th scope="col">Check</th><th scope="col">Why it matters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Every search carried <code>max_date</code></strong></td>
+                  <td>Log your search calls and assert the field is present on all of them. One
+                      unfiltered query is enough to leak.</td>
+                </tr>
+                <tr>
+                  <td><strong>Assert <code>pub_date &lt;= cutoff</code> client-side</strong></td>
+                  <td>A cheap backstop against a misconfigured host or a stale cache. Treat any
+                      violation as a failed run, not a warning.</td>
+                </tr>
+                <tr>
+                  <td><strong>Fetch only doc ids that <code>search</code> returned</strong></td>
+                  <td>Fetching arbitrary ids — or falling back to the live web when a fetch fails —
+                      pulls in documents the point-in-time filter never saw.</td>
+                </tr>
+                <tr>
+                  <td><strong>No live-web tool in the loop</strong></td>
+                  <td>Disable any tool that can reach today's web during the run. Your
+                      cutoff-filtered retrieval must be the only evidence source.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>A minimal gate you can drop into your harness:</p>
+          <div class="code-block">
+            <button class="copy-btn" type="button" data-copy="@prev">copy</button>
+<pre><code>def guarded_search(query: str, k: int, cutoff: str) -&gt; list[dict]:
+    """Search with the cutoff, then re-verify it on the way back."""
+    hits = search(query, k, cutoff)
+    for h in hits:
+        pub = (h.get("pub_date") or "")[:10]
+        if pub &gt; cutoff:                       # ISO dates compare lexically
+            raise RuntimeError(f"leak: {h['doc_id']} published {pub} &gt; {cutoff}")
+    seen_ids.update(h["doc_id"] for h in hits)
+    return hits
+
+def guarded_fetch(doc_id: str) -&gt; str:
+    if doc_id not in seen_ids:                 # never fetch what search didn't return
+        raise RuntimeError(f"doc {doc_id} is outside the point-in-time evidence set")
+    return fetch(doc_id)</code></pre>
+          </div>
+
+          <div class="callout">
+            <h3>A note on the model's own memory</h3>
+            <p>
+              A backbone model trained after the cutoff may simply <em>know</em> what happened next.
+              We cannot audit that, and we do not ask you to unlearn it — but the report should
+              stand on retrieved, cited evidence. Prompt your agent to assert only what its
+              point-in-time sources support, and to cite each claim. Reports that recite post-cutoff
+              outcomes without pre-cutoff grounding score poorly on the pre-cutoff axis anyway: the rubric
+              rewards reasoning, not recall.
+            </p>
+          </div>
+        </li>
+
+        <li>
+          <h3>Format your <code>answers.jsonl</code></h3>
+          <p>
+            One JSON object per line, one line per question — this is the exact shape our grader
+            reads. See the <a href="#format">full data format</a> below.
+          </p>
+        </li>
+
+        <li>
+          <h3>Send it to us</h3>
+          <p>See <a href="#submit-channels">submission channels</a>.</p>
+        </li>
+
+      </ol>
+    </section>
+
+    <section id="format">
+      <h2>Data format for grading</h2>
+      <p class="lede">
+        A single <strong>JSONL</strong> file: one object per line, one line per benchmark question.
+        400 lines for a full run; partial runs are accepted but are marked as such on the
+        leaderboard.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Fields our grader reads from each line of <code>answers.jsonl</code>.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Field</th><th scope="col">Type</th>
+              <th scope="col">Required</th><th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>question</code></td><td>string</td><td class="req">required</td>
+              <td>The benchmark question <strong>verbatim</strong>. This is the key that matches
+                  your answer to its withheld rubric — any edit, truncation, or added framing
+                  breaks the match and the line is dropped.</td>
+            </tr>
+            <tr>
+              <td><code>cutoff</code></td><td>string <code>YYYY-MM-DD</code></td><td class="req">required</td>
+              <td>The task's cutoff, copied from the question file.</td>
+            </tr>
+            <tr>
+              <td><code>report</code></td><td>string</td><td class="req">required</td>
+              <td>Your agent's full research report, with citations. Markdown is fine; it is graded
+                  as text. Do not wrap it in extra JSON.</td>
+            </tr>
+            <tr>
+              <td><code>searches</code></td><td>list[string]</td><td class="opt">optional</td>
+              <td>The query strings your agent issued, in order. Used for retrieval-behaviour
+                  analysis, not scored.</td>
+            </tr>
+            <tr>
+              <td><code>docs_retrieved</code></td><td>int</td><td class="opt">optional</td>
+              <td>Number of documents your agent fetched.</td>
+            </tr>
+            <tr>
+              <td><code>steps</code></td><td>int</td><td class="opt">optional</td>
+              <td>Number of search/reason iterations.</td>
+            </tr>
+            <tr>
+              <td><code>elapsed_s</code></td><td>float</td><td class="opt">optional</td>
+              <td>Wall-clock seconds for the task.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout is-critical" style="margin-top:1.25rem">
+        <h3><span class="mark" aria-hidden="true">●</span> Do not include the rubric</h3>
+        <p>
+          Submissions carrying a <code>rubric</code> field are rejected. The rubric is withheld by
+          design, and a submitted one signals that the run was tuned against it.
+        </p>
+      </div>
+
+      <h3>Example line</h3>
+      <div class="code-block">
+        <button class="copy-btn" type="button" data-copy="@prev">copy</button>
+<pre><code>{"question": "How does Air France-KLM's accelerated transition ...",
+ "cutoff": "2025-08-05",
+ "report": "**Equity Research Note**\n\n...",
+ "searches": ["Air France-KLM SAS stake consolidation"],
+ "docs_retrieved": 16,
+ "steps": 7,
+ "elapsed_s": 62.2}</code></pre>
+      </div>
+      <p class="footnote">Shown wrapped for readability — in the file each object is one line.</p>
+
+      <h3>Validate before sending</h3>
+      <p>
+        This checks the three required fields, rejects a stray rubric, and confirms every
+        <code>question</code> matches the benchmark file exactly.
+      </p>
+      <div class="code-block">
+        <button class="copy-btn" type="button" data-copy="@prev">copy</button>
+<pre><code>import json
+
+bench = {json.loads(l)["question"]: json.loads(l)["cutoff"]
+         for l in open("benchmark_400_public.jsonl")}
+
+seen, problems = set(), []
+for i, line in enumerate(open("answers.jsonl"), 1):
+    row = json.loads(line)
+    for f in ("question", "cutoff", "report"):
+        if not row.get(f):
+            problems.append(f"line {i}: missing/empty {f}")
+    if "rubric" in row:
+        problems.append(f"line {i}: remove the rubric field")
+    q = row.get("question", "")
+    if q not in bench:
+        problems.append(f"line {i}: question does not match any benchmark question verbatim")
+    elif row.get("cutoff") != bench[q]:
+        problems.append(f"line {i}: cutoff {row.get('cutoff')} != {bench[q]}")
+    if q in seen:
+        problems.append(f"line {i}: duplicate question")
+    seen.add(q)
+
+print(f"{len(seen)}/400 questions answered")
+print("\n".join(problems) or "OK — ready to submit")</code></pre>
+      </div>
+
+      <h3>Metadata to include with your submission</h3>
+      <div class="code-block">
+        <button class="copy-btn" type="button" data-copy="@prev">copy</button>
+<pre><code>agent: my-research-agent
+org: Example Lab
+base_model: your-model        # the backbone your agent used
+date: 2026-08-04
+contact: you@example.com
+notes: agent loop, 8 workers, PIT-compliant (max_date enforced on every search).</code></pre>
+      </div>
+    </section>
+
+    <section id="submit-channels">
+      <h2>Submission channels</h2>
+      <p class="lede">
+        Two ways in. You keep your <code>answers.jsonl</code>; maintainers run the judge and post
+        the result.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <h3>GitHub issue <span class="chip">preferred</span></h3>
+          <p>
+            Open a <a href="https://github.com/google-research/google-research/issues/new">Benchmark
+            Submission issue</a> and fill in the template: agent name, organization, base model, a
+            link to your <code>answers.jsonl</code> (release asset, gist, or cloud link — or attach
+            it if small), contact, and the point-in-time compliance confirmation.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Email</h3>
+          <p>
+            Send your <code>answers.jsonl</code> plus the metadata block to
+            <a href="mailto:financegym-submissions@example.com">financegym-submissions@example.com</a><span class="badge-placeholder">placeholder</span>
+            with the subject line:
+          </p>
+          <p><code>FinanceGym submission: &lt;agent-name&gt;</code></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="grading">
+      <h2>How grading works</h2>
+      <div class="prose">
+        <p>
+          Each question carries an expert-annotated rubric of 0–4 items, split into two categories.
+          <strong>Antecedent</strong> items are verified against evidence available at or before the
+          cutoff; <strong>consequent</strong> items are verified against what actually happened
+          after it. Scores are normalized to a percentage and aggregated with bootstrap confidence
+          intervals, which produces the three leaderboard columns:
+        </p>
+        <ul>
+          <li><strong>Pre-cutoff</strong> — antecedent items: how well the report is grounded in what was knowable at the cutoff.</li>
+          <li><strong>Post-cutoff</strong> — consequent items: how well it anticipated what followed.</li>
+          <li><strong>Overall</strong> — the normalized mean across all rubric items, with its standard error.</li>
+        </ul>
+        <p>
+          Grading is single-blind and maintainer-run: the rubric is never shared, so no tuning to it
+          is possible. The judge pipeline is reproducible and documented in
+          <code>docs/grading.md</code>.
+        </p>
+      </div>
+      <div class="callout is-good">
+        <h3><span class="mark" aria-hidden="true">✓</span> What happens after you submit</h3>
+        <p>
+          We validate the file shape, run the judge over your reports, and add your row to the
+          <a href="#leaderboard">leaderboard</a>, linked to your system's paper or repository. If anything
+          about the submission is malformed or looks non-compliant, we come back to you before
+          publishing a score.
+        </p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>FinanceGym — point-in-time benchmark + rubric judge.</span>
+    <span>
+      <a href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym">Repository</a> ·
+      <a href="https://github.com/google-research/google-research/tree/master/finance_harness/FinanceGym/data">Data</a> ·
+      <a href="#top">Back to top</a>
+    </span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Chart generator: kept locally as the source of truth for the pareto section,
+# never published — the deployed folder is world-readable and this file carries
+# the per-arm cost/latency table and provenance flags behind the plot.
+build_pareto.py
+# Internal maintainer notes, not part of the site.
+README.md

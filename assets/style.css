@@ -1,0 +1,597 @@
+/* FinanceGym site — one stylesheet, no dependencies.
+   Color roles come from the validated reference palette; the only chart hue is
+   the single sequential blue used by the Overall score bar. Category identity is
+   carried by text chips + faceted panels, never by hue alone. */
+
+:root {
+  color-scheme: light;
+
+  --plane:          #f9f9f7;
+  --surface-1:      #fcfcfb;
+  --surface-2:      #f2f1ed;
+  --text-primary:   #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted:     #898781;
+  --border:         rgba(11, 11, 11, 0.10);
+  --grid:           #e1e0d9;
+  --baseline:       #c3c2b7;
+
+  --accent:         #2a78d6;
+  --accent-weak:    #cde2fb;
+  --accent-ink:     #184f95;
+
+  --good:           #0ca30c;
+  --good-ink:       #006300;
+  --critical:       #d03b3b;
+
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius: 10px;
+  --measure: 68ch;
+  --wrap: 1120px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --plane:          #0d0d0d;
+    --surface-1:      #1a1a19;
+    --surface-2:      #232322;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --border:         rgba(255, 255, 255, 0.10);
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --accent:         #3987e5;
+    --accent-weak:    #184f95;
+    --accent-ink:     #86b6ef;
+    --good:           #0ca30c;
+    --good-ink:       #0ca30c;
+    --critical:       #e34948;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane:          #0d0d0d;
+  --surface-1:      #1a1a19;
+  --surface-2:      #232322;
+  --text-primary:   #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted:     #898781;
+  --border:         rgba(255, 255, 255, 0.10);
+  --grid:           #2c2c2a;
+  --baseline:       #383835;
+  --accent:         #3987e5;
+  --accent-weak:    #184f95;
+  --accent-ink:     #86b6ef;
+  --good:           #0ca30c;
+  --good-ink:       #0ca30c;
+  --critical:       #e34948;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--text-primary);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 .5rem; letter-spacing: -0.015em; }
+h1 { font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem); }
+h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.75rem); margin-top: 0; }
+h3 { font-size: 1.05rem; }
+h4 { font-size: .95rem; margin-top: 1.75rem; }
+p  { margin: 0 0 1rem; }
+
+code, kbd, pre { font-family: var(--mono); font-size: .875em; }
+code { background: var(--surface-2); padding: .12em .38em; border-radius: 5px; }
+pre {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  margin: 0 0 1rem;
+  line-height: 1.55;
+}
+pre code { background: none; padding: 0; }
+
+/* --- layout ---------------------------------------------------------- */
+
+.wrap { width: min(var(--wrap), 100% - 2.5rem); margin-inline: auto; }
+
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--plane) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .wrap {
+  display: flex; align-items: center; gap: 1rem;
+  min-height: 3.75rem; flex-wrap: wrap;
+}
+.brand {
+  font-weight: 650; letter-spacing: -0.02em; font-size: 1.05rem;
+  color: var(--text-primary); text-decoration: none; margin-right: auto;
+  display: inline-flex; align-items: center; gap: .5rem;
+}
+.brand .dot {
+  width: .55rem; height: .55rem; border-radius: 50%;
+  background: var(--accent); flex: none;
+}
+.nav { display: flex; align-items: center; gap: .25rem; flex-wrap: wrap; }
+.nav a {
+  color: var(--text-secondary); text-decoration: none;
+  padding: .35rem .6rem; border-radius: 7px; font-size: .9rem; font-weight: 500;
+}
+.nav a:hover { background: var(--surface-2); color: var(--text-primary); }
+.nav a[aria-current] { color: var(--text-primary); background: var(--surface-2); }
+
+.icon-btn {
+  display: inline-grid; place-items: center;
+  width: 2rem; height: 2rem; padding: 0;
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border); border-radius: 7px; cursor: pointer;
+  font-size: .9rem; line-height: 1;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text-primary); }
+
+main { padding: 2.5rem 0 4rem; }
+section { margin-bottom: 3rem; }
+
+/* One long page, so each section announces itself with a rule above it. (Jump
+   links clear the sticky header via scroll-padding-top on <html>.) */
+main section + section {
+  border-top: 1px solid var(--border);
+  padding-top: 2.75rem;
+}
+.hero + section { border-top: 0; padding-top: 0; }
+.lede { color: var(--text-secondary); font-size: 1.05rem; max-width: var(--measure); }
+.prose { max-width: var(--measure); }
+.prose ul, .prose ol { padding-left: 1.25rem; margin: 0 0 1rem; }
+.prose li { margin-bottom: .35rem; }
+
+/* --- hero + stat tiles ------------------------------------------------ */
+
+.hero { padding: 1rem 0 2.25rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+.hero h1 { max-width: 22ch; }
+.eyebrow {
+  font-size: .75rem; font-weight: 650; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: .75rem;
+}
+.cta-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .55rem 1rem; border-radius: 8px;
+  font-size: .9rem; font-weight: 550; text-decoration: none;
+  border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+}
+.btn:hover { background: var(--surface-2); color: var(--text-primary); }
+.btn-primary { background: var(--accent); border-color: transparent; color: #fff; }
+.btn-primary:hover { background: var(--accent-ink); color: #fff; }
+
+.stats {
+  display: grid; gap: 1px; margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  background: var(--border); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden;
+}
+.stat { background: var(--surface-1); padding: 1rem 1.1rem; }
+.stat .value { font-size: 1.6rem; font-weight: 620; letter-spacing: -0.02em; display: block; }
+.stat .label { font-size: .8rem; color: var(--text-secondary); }
+
+/* --- cards ------------------------------------------------------------ */
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.35rem;
+}
+.card h3 { margin-bottom: .35rem; }
+.card p:last-child { margin-bottom: 0; }
+.card-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+.callout {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  margin: 0 0 1.5rem;
+}
+.callout.is-critical { border-left-color: var(--critical); }
+.callout.is-good { border-left-color: var(--good); }
+.callout h3 { display: flex; align-items: center; gap: .5rem; }
+.callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+.callout .mark { font-size: 1rem; line-height: 1; }
+.callout.is-critical .mark { color: var(--critical); }
+.callout.is-good .mark { color: var(--good-ink); }
+
+/* --- chips + badges --------------------------------------------------- */
+
+.chip {
+  display: inline-block; white-space: nowrap;
+  padding: .12rem .5rem; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface-2);
+  color: var(--text-secondary); font-size: .75rem; font-weight: 550;
+}
+.badge-placeholder {
+  display: inline-block; margin-left: .4rem;
+  padding: .05rem .4rem; border-radius: 5px;
+  background: var(--surface-2); border: 1px dashed var(--baseline);
+  color: var(--text-muted); font-size: .7rem; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase; vertical-align: middle;
+}
+
+/* --- controls --------------------------------------------------------- */
+
+.controls {
+  display: flex; flex-wrap: wrap; gap: .6rem; align-items: center;
+  margin-bottom: 1rem;
+}
+.controls label { font-size: .8rem; color: var(--text-secondary); }
+input[type="search"], select {
+  font: inherit; font-size: .9rem;
+  padding: .45rem .65rem;
+  color: var(--text-primary); background: var(--surface-1);
+  border: 1px solid var(--border); border-radius: 8px;
+}
+input[type="search"] { min-width: min(320px, 100%); }
+input[type="search"]:focus-visible, select:focus-visible, .icon-btn:focus-visible,
+a:focus-visible, button:focus-visible, th button:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.result-count { font-size: .85rem; color: var(--text-secondary); margin-left: auto; }
+/* Sole occupant of .controls now that the category facet is gone — sit left. */
+.controls > .result-count:only-child { margin-left: 0; }
+
+/* --- tables ----------------------------------------------------------- */
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+caption { text-align: left; padding: .9rem 1rem .35rem; color: var(--text-secondary); font-size: .85rem; }
+th, td { padding: .6rem .85rem; text-align: left; vertical-align: top; }
+thead th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--baseline);
+  font-size: .78rem; font-weight: 620; letter-spacing: .03em;
+  text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
+}
+tbody tr + tr td { border-top: 1px solid var(--grid); }
+tbody tr:hover td { background: var(--surface-2); }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rank { color: var(--text-muted); font-variant-numeric: tabular-nums; width: 3rem; }
+.system { font-weight: 550; white-space: nowrap; }
+tr.is-ours .system { color: var(--text-primary); }
+tr.is-ours .system::after {
+  content: "ours"; margin-left: .45rem;
+  font-size: .65rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent-ink); vertical-align: middle;
+}
+th button {
+  font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: .25rem;
+}
+th button:hover { color: var(--text-primary); }
+th .sort-mark { color: var(--accent); font-size: .7rem; }
+
+/* Overall score bar — single sequential hue, thin mark, rounded data-end,
+   anchored to a shared baseline; the value label stays in ink. */
+.score-cell { display: flex; align-items: center; gap: .6rem; justify-content: flex-end; }
+.score-cell .value { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 2.6rem; text-align: right; }
+.bar-track {
+  position: relative; flex: none;
+  width: 96px; height: 8px; border-radius: 4px;
+  background: var(--grid);
+}
+.bar-fill {
+  position: absolute; inset-block: 0; left: 0;
+  border-radius: 4px; background: var(--accent);
+}
+/* --- copy-to-clipboard button ----------------------------------------- */
+
+.copy-btn {
+  font: inherit; font-size: .72rem; font-weight: 600;
+  padding: .18rem .45rem; border-radius: 6px; cursor: pointer;
+  background: var(--surface-1); color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.copy-btn:hover { color: var(--text-primary); background: var(--surface-2); }
+
+/* --- field spec list -------------------------------------------------- */
+
+.req { color: var(--good-ink); font-weight: 650; }
+.opt { color: var(--text-muted); }
+
+.footnote { font-size: .85rem; color: var(--text-secondary); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* --- numbered steps --------------------------------------------------- */
+
+.steps { list-style: none; counter-reset: step; padding: 0; margin: 0; }
+.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 1.75rem 3rem;
+  border-left: 1px solid var(--grid);
+  margin-left: 1rem;
+}
+.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+.steps > li::before {
+  content: counter(step);
+  position: absolute; left: -1rem; top: -.15rem;
+  width: 2rem; height: 2rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--surface-1); border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: .85rem; font-weight: 650; font-variant-numeric: tabular-nums;
+}
+.steps h3 { margin-top: 0; }
+.steps > li > :last-child { margin-bottom: 0; }
+
+.code-block { position: relative; }
+.code-block .copy-btn { position: absolute; top: .55rem; right: .55rem; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.75rem 0 2.5rem;
+  color: var(--text-secondary); font-size: .85rem;
+}
+.site-footer .wrap { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: space-between; }
+
+.skip-link {
+  position: absolute; left: -9999px;
+  background: var(--surface-1); color: var(--text-primary);
+  padding: .5rem .8rem; border-radius: 8px; border: 1px solid var(--border);
+}
+.skip-link:focus { left: 1rem; top: .5rem; z-index: 50; }
+
+@media (max-width: 640px) {
+  .result-count { margin-left: 0; width: 100%; }
+  .bar-track { width: 56px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
+}
+
+/* --- cost–quality frontier -------------------------------------------- */
+
+/* Categorical slots for the scatter. Both modes are selected, not flipped:
+   each is the same four hues re-stepped for its surface and validated against
+   it (lightness band, chroma floor, CVD separation, contrast). */
+:root {
+  --s1: #2a78d6;  /* FinanceHarness */
+  --s2: #eb6834;  /* ReAct */
+  --s3: #1baf7a;  /* agentic scaffold */
+  --s4: #eda100;  /* fine-tuned open-weight */
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  }
+}
+:root[data-theme="dark"] {
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+}
+
+.pareto-wrap { margin-top: 1.25rem; }
+.pareto-svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+.pareto-svg .grid { stroke: var(--grid); stroke-width: 1; }
+.pareto-svg .grid-v { stroke-dasharray: 2 4; }
+.pareto-svg .axis { stroke: var(--baseline); stroke-width: 1; }
+.pareto-svg .tick { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.pareto-svg .tick-y { text-anchor: end; }
+.pareto-svg .tick-x { text-anchor: middle; }
+.pareto-svg .axis-title { fill: var(--text-secondary); font-size: 11.5px; text-anchor: middle; }
+
+/* The staircase is context, not a series — it stays in ink, never a hue. */
+.pareto-svg .frontier {
+  fill: none; stroke: var(--baseline); stroke-width: 1.5;
+  stroke-dasharray: 5 4; stroke-linejoin: round;
+}
+.pareto-svg .frontier-label { fill: var(--text-muted); font-size: 11px; font-style: italic; }
+
+.pareto-svg .m { stroke: var(--surface-1); stroke-width: 1.5; }
+.pareto-svg .m-harness { fill: var(--s1); }
+.pareto-svg .m-react   { fill: var(--s2); }
+.pareto-svg .m-agentic { fill: var(--s3); }
+.pareto-svg .m-tuned   { fill: var(--s4); }
+/* Emphasised points carry a surface ring so they read as a second encoding,
+   not a fifth hue. */
+.pareto-svg .m-emph { stroke: var(--text-primary); stroke-width: 2; }
+
+/* Labels wear text ink, never the series colour. */
+.pareto-svg .plabel { fill: var(--text-secondary); font-size: 11px; }
+.pareto-svg .plabel-emph { fill: var(--text-primary); font-weight: 640; font-size: 11.5px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin-bottom: .75rem; }
+.legend .lg {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .82rem; color: var(--text-secondary);
+}
+.legend .lg svg { flex: none; overflow: visible; }
+.legend .lg-note { color: var(--text-muted); }
+
+.pareto-table { margin-top: 1.1rem; }
+.pareto-table summary {
+  cursor: pointer; font-size: .88rem; color: var(--text-secondary);
+  padding: .35rem 0;
+}
+.pareto-table summary:hover { color: var(--text-primary); }
+
+/* Direction-of-good annotation — an aside, so it stays in muted ink and never
+   competes with the marks. */
+.pareto-svg .better-label {
+  fill: var(--text-secondary); font-size: 12px; font-weight: 600;
+  font-style: normal; letter-spacing: .05em;
+}
+
+/* Desirable region — high score, low cost. Background, not a series: it is the
+   one neutral hue on the chart so it can never be mistaken for a fifth group. */
+.pareto-svg .better-zone { fill: url(#better-glow); }
+.pareto-svg .bg-near { stop-color: var(--text-primary); stop-opacity: .085; }
+.pareto-svg .bg-mid  { stop-color: var(--text-primary); stop-opacity: .038; }
+.pareto-svg .bg-far  { stop-color: var(--text-primary); stop-opacity: 0; }
+.pareto-svg .better-edge {
+  stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 4; opacity: .45;
+}
+
+/* --- point hover ------------------------------------------------------ */
+/* Only the hit targets take pointer events; everything else is decoration and
+   must not swallow a hover meant for a mark underneath it. */
+.pareto-svg .grid, .pareto-svg .axis, .pareto-svg .tick, .pareto-svg .axis-title,
+.pareto-svg .frontier, .pareto-svg .frontier-label, .pareto-svg .plabel,
+.pareto-svg .leader, .pareto-svg .better, .pareto-svg .better-zone,
+.pareto-svg .better-edge { pointer-events: none; }
+
+.pareto-svg .hit { fill: transparent; pointer-events: all; cursor: pointer; }
+.pareto-svg .pt { outline: none; }
+.pareto-svg .pt:hover .m,
+.pareto-svg .pt:focus-visible .m {
+  stroke: var(--text-primary); stroke-width: 2.5;
+}
+.pareto-svg .pt:focus-visible .hit {
+  stroke: var(--accent); stroke-width: 2; stroke-dasharray: 3 3;
+}
+/* Dim the field so the hovered mark reads as the selected one. */
+.pareto-svg:has(.pt:hover) .pt:not(:hover) .m,
+.pareto-svg:has(.pt:focus-visible) .pt:not(:focus-visible) .m { opacity: .34; }
+
+.pareto-wrap { position: relative; }
+.pareto-tip {
+  position: absolute; z-index: 5; pointer-events: none;
+  min-width: 9.5rem; max-width: 17rem;
+  padding: .5rem .65rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .16);
+  font-size: .8rem; line-height: 1.45;
+  opacity: 0; visibility: hidden;
+  transform: translate(-50%, calc(-100% - 12px));
+  transition: opacity .09s ease-out;
+}
+.pareto-tip.is-on { opacity: 1; visibility: visible; }
+.pareto-tip .tip-name {
+  display: flex; align-items: baseline; gap: .4rem;
+  font-weight: 640; color: var(--text-primary); margin-bottom: .3rem;
+}
+.pareto-tip .sw {
+  flex: none; width: 9px; height: 9px; border-radius: 2px;
+  transform: translateY(-1px);
+}
+.pareto-tip[data-group="harness"] .sw { background: var(--s1); }
+.pareto-tip[data-group="react"]   .sw { background: var(--s2); }
+.pareto-tip[data-group="agentic"] .sw { background: var(--s3); }
+.pareto-tip[data-group="tuned"]   .sw { background: var(--s4); }
+.pareto-tip dl {
+  display: grid; grid-template-columns: auto auto; gap: .1rem .7rem;
+  margin: 0; justify-content: space-between;
+}
+.pareto-tip dt { color: var(--text-secondary); }
+.pareto-tip dd {
+  margin: 0; text-align: right; color: var(--text-primary);
+  font-variant-numeric: tabular-nums; font-weight: 600;
+}
+.pareto-tip .tip-note {
+  margin: .35rem 0 0; padding-top: .3rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: .74rem;
+}
+@media (prefers-reduced-motion: reduce) { .pareto-tip { transition: none; } }
+
+/* Two frontiers side by side on wide screens, stacked on narrow. One shared
+   legend above both — identity is the same in each chart. */
+.pareto-grid {
+  display: grid; gap: 1.5rem 1.75rem; margin-top: .25rem;
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+}
+.pareto-fig { margin: 0; }
+.pareto-fig figcaption {
+  font-size: .9rem; font-weight: 600; color: var(--text-primary);
+  margin-bottom: .35rem;
+}
+.pareto-svg .leader { stroke: var(--baseline); stroke-width: 1; opacity: .6; }
+
+/* Header lost its brand block, so the nav takes over pushing the theme toggle
+   to the right edge. */
+.site-header .nav { margin-right: auto; }
+
+/* Hero: the product name is the h1, with the one-line description under it. */
+.hero h1 { max-width: none; margin-bottom: .35rem; }
+.hero .subtitle {
+  font-size: clamp(1.05rem, .95rem + .5vw, 1.35rem);
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.25rem;
+  max-width: var(--measure);
+}
+
+/* Wordmark: "Gym" in dodger blue. The light step is nudged deeper (#0F7FE8)
+   because true dodgerblue lands at 3.07:1 on the light surface — over the
+   large-text floor but uncomfortably close; the dark step is dodgerblue as-is
+   at 6.0:1. Same hue, selected per surface. */
+.hero h1 .gym { color: #0F7FE8; }
+.hero .subtitle { color: #1a6fd4; }
+
+/* Emphasis blue for the one rule the benchmark turns on. Stepped per surface:
+   the subtitle sits at ~21px, which WCAG counts as body text, so the light step
+   is deepened to clear 4.5:1 (#1a6fd4 = 4.67:1) rather than using the display
+   blue from the wordmark (3.07:1). */
+.hl-blue { color: #1a6fd4; font-weight: 560; }
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .hero h1 .gym { color: #1E90FF; }
+  :root:where(:not([data-theme="light"])) .hero .subtitle { color: #6BB1FF; }
+  :root:where(:not([data-theme="light"])) .hl-blue { color: #6BB1FF; }
+}
+:root[data-theme="dark"] .hero h1 .gym { color: #1E90FF; }
+:root[data-theme="dark"] .hero .subtitle { color: #6BB1FF; }
+:root[data-theme="dark"] .hl-blue { color: #6BB1FF; }
+
+/* --- leaderboard system links ----------------------------------------- */
+/* Identity stays with the row's text; the link is a quiet secondary action,
+   so it wears link ink rather than a chip's filled background. */
+.ref-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .25em;
+  white-space: nowrap;
+  font-size: .86rem;
+  color: var(--accent-ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.ref-link:hover,
+.ref-link:focus-visible { border-bottom-color: currentColor; }
+.ref-link .ext { font-size: .78em; opacity: .6; }
