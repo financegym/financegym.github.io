@@ -601,11 +601,11 @@ th .sort-mark { color: var(--accent); font-size: .7rem; }
 .ref-link:focus-visible { border-bottom-color: currentColor; }
 .ref-link .ext { font-size: .78em; opacity: .6; }
 
-/* Contributor on externally submitted rows — sits after the ref link, muted so
-   the framework link stays the primary target in the cell. */
+/* Contributor column — set on externally submitted rows only, empty elsewhere.
+   Primary text colour, matching the other data cells. */
 .contrib {
   font-size: .82rem;
-  color: var(--text-muted);
+  color: var(--text-primary);
   white-space: normal;
 }
 

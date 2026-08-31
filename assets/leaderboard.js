@@ -8,7 +8,7 @@
 
    `contrib` is set only on externally contributed rows: the participant ran the
    benchmark on their own infrastructure and submitted reports, which maintainers
-   then scored with the standard pipeline. It renders after the ref link. */
+   then scored with the standard pipeline. It fills the Contributor column. */
 
 var FG_REF = {
   react:      { name: "ReAct",          url: "https://arxiv.org/pdf/2210.03629" },
@@ -79,15 +79,14 @@ window.FG_LEADERBOARD = [
     return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  function refLink(ref, contrib) {
+  function refLink(ref) {
     if (!ref) return "";
     var kind = ref.url.indexOf("github.com") !== -1 ? "repository" : "paper";
     return (
       '<a class="ref-link" href="' + ref.url + '" target="_blank" rel="noopener"' +
         ' title="' + ref.name + " " + kind + '">' + ref.name +
         '<span class="ext" aria-hidden="true">↗</span>' +
-      "</a>" +
-      (contrib ? ' <span class="contrib">/ ' + esc(contrib) + "</span>" : "")
+      "</a>"
     );
   }
 
@@ -119,7 +118,8 @@ window.FG_LEADERBOARD = [
           '<td class="num">' + r.hindsight.toFixed(1) + "</td>" +
           '<td class="num">' + r.foresight.toFixed(1) + "</td>" +
           '<td class="num">' + r.se.toFixed(1) + "</td>" +
-          "<td>" + refLink(r.ref, r.contrib) + "</td>" +
+          "<td>" + refLink(r.ref) + "</td>" +
+          '<td class="contrib">' + (r.contrib ? esc(r.contrib) : "") + "</td>" +
         "</tr>"
       );
     }).join("");
