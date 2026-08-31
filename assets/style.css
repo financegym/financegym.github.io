@@ -601,6 +601,14 @@ th .sort-mark { color: var(--accent); font-size: .7rem; }
 .ref-link:focus-visible { border-bottom-color: currentColor; }
 .ref-link .ext { font-size: .78em; opacity: .6; }
 
+/* Contributor on externally submitted rows — sits after the ref link, muted so
+   the framework link stays the primary target in the cell. */
+.contrib {
+  font-size: .82rem;
+  color: var(--text-muted);
+  white-space: normal;
+}
+
 /* --- tabbed panels ---------------------------------------------------- */
 .tabs { margin-top: 1.25rem; }
 .tablist {

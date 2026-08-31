@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinanceGym — point-in-time finance deep-research benchmark</title>
 <meta name="description" content="FinanceGym is a point-in-time agentic finance research benchmark: 400 expert-annotated questions with publication-date cutoffs and a rubric judge. Leaderboard, data, and submission instructions on one page.">
-<link rel="stylesheet" href="assets/style.css?v=58">
+<link rel="stylesheet" href="assets/style.css?v=59">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>📈</text></svg>">
-<script src="assets/site.js?v=58" defer></script>
-<script src="assets/leaderboard.js?v=58" defer></script>
-<script src="assets/pareto.js?v=58" defer></script>
+<script src="assets/site.js?v=59" defer></script>
+<script src="assets/leaderboard.js?v=59" defer></script>
+<script src="assets/pareto.js?v=59" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -88,8 +88,9 @@
       <p class="lede">
         Normalized rubric means (%) over the 400-question set. <strong>Pre-cutoff</strong> =
         grounding in evidence available at the cutoff, <strong>Post-cutoff</strong> = reasoning about what followed, <strong>±SE</strong>
-        = standard error of the Overall mean. <strong>System link</strong> points at the paper or
-        repository for the agent framework the row runs on. Rank always reflects the overall
+        = standard error of the Overall mean. <strong>System link / Contributor</strong> points at
+        the paper or repository for the agent framework the row runs on; for externally
+        contributed runs it also names the submitter. Rank always reflects the overall
         standing, whatever column you sort by.
       </p>
 
@@ -107,12 +108,21 @@
               <th scope="col" data-sort="hindsight" class="num"><button type="button">Pre-cutoff <span class="sort-mark"></span></button></th>
               <th scope="col" data-sort="foresight" class="num"><button type="button">Post-cutoff <span class="sort-mark"></span></button></th>
               <th scope="col" data-sort="se" class="num"><button type="button">±SE <span class="sort-mark"></span></button></th>
-              <th scope="col" data-sort="ref"><button type="button">System link <span class="sort-mark"></span></button></th>
+              <th scope="col" data-sort="ref"><button type="button">System link / Contributor <span class="sort-mark"></span></button></th>
             </tr>
           </thead>
           <tbody id="lb-body"></tbody>
         </table>
       </div>
+
+      <p class="footnote" style="margin-top:.9rem">
+        Rows naming a contributor are external submissions: the participant ran the benchmark on
+        their own infrastructure and submitted reports, which maintainers then scored with the
+        standard pipeline. All other rows were run in-house. Contributed runs are scored
+        identically but are not controlled for retrieval environment, so they are not
+        matched-backbone comparisons, and they carry no cost figure — the frontier plot below
+        shows in-house arms only.
+      </p>
 
       <p class="footnote" style="margin-top:.9rem">
         Post-cutoff scores sit far below pre-cutoff for every system — anticipating consequences from

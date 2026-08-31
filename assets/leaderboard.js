@@ -4,7 +4,11 @@
 
    `ref` points at the agentic system the row runs on: the paper for published
    frameworks, the repository for the ones that only exist as code. Rows whose
-   backbone internalizes the research loop point at the model's own paper. */
+   backbone internalizes the research loop point at the model's own paper.
+
+   `contrib` is set only on externally contributed rows: the participant ran the
+   benchmark on their own infrastructure and submitted reports, which maintainers
+   then scored with the standard pipeline. It renders after the ref link. */
 
 var FG_REF = {
   react:      { name: "ReAct",          url: "https://arxiv.org/pdf/2210.03629" },
@@ -28,6 +32,8 @@ window.FG_LEADERBOARD = [
   { system: "Claude-Opus-4.7 · ReAct",            ref: FG_REF.react,      overall: 34.1, hindsight: 50.1, foresight: 9.9,  se: 0.8 },
   { system: "Gemini-3.1-Pro · ReAct",             ref: FG_REF.react,      overall: 33.2, hindsight: 46.8, foresight: 12.8, se: 0.7 },
   { system: "Qwen3.6-27B · FinanceHarness",       ref: FG_REF.harness,    overall: 32.4, hindsight: 45.7, foresight: 11.8, se: 0.8 },
+  { system: "gpt-oss-120b · FinanceHarness",      ref: FG_REF.harness,    overall: 31.9, hindsight: 47.0, foresight: 8.1,  se: 0.7,
+    contrib: "Quan Wei (University of Minnesota)" },
   { system: "GPT-5.5 · ReAct",                    ref: FG_REF.react,      overall: 31.8, hindsight: 47.5, foresight: 8.0,  se: 0.7 },
   { system: "Gemini-3-Flash · TTD-DR",            ref: FG_REF.ttddr,      overall: 31.5, hindsight: 45.5, foresight: 9.8,  se: 0.7 },
   { system: "GLM-5 · ReAct",                      ref: FG_REF.react,      overall: 30.4, hindsight: 44.7, foresight: 8.5,  se: 0.9 },
@@ -68,14 +74,20 @@ window.FG_LEADERBOARD = [
     return system.replace("FinanceHarness", '<span class="fh">FinanceHarness</span>');
   }
 
-  function refLink(ref) {
+  // Escapes text that goes into the ref cell alongside the link markup.
+  function esc(t) {
+    return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function refLink(ref, contrib) {
     if (!ref) return "";
     var kind = ref.url.indexOf("github.com") !== -1 ? "repository" : "paper";
     return (
       '<a class="ref-link" href="' + ref.url + '" target="_blank" rel="noopener"' +
         ' title="' + ref.name + " " + kind + '">' + ref.name +
         '<span class="ext" aria-hidden="true">↗</span>' +
-      "</a>"
+      "</a>" +
+      (contrib ? ' <span class="contrib">/ ' + esc(contrib) + "</span>" : "")
     );
   }
 
@@ -107,7 +119,7 @@ window.FG_LEADERBOARD = [
           '<td class="num">' + r.hindsight.toFixed(1) + "</td>" +
           '<td class="num">' + r.foresight.toFixed(1) + "</td>" +
           '<td class="num">' + r.se.toFixed(1) + "</td>" +
-          "<td>" + refLink(r.ref) + "</td>" +
+          "<td>" + refLink(r.ref, r.contrib) + "</td>" +
         "</tr>"
       );
     }).join("");
