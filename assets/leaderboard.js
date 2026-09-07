@@ -29,6 +29,7 @@ window.FG_LEADERBOARD = [
   { system: "Claude-Opus-4.8 · FinanceHarness",   ref: FG_REF.harness,    overall: 38.3, hindsight: 55.2, foresight: 11.9, se: 0.9 },
   { system: "Gemini-3.1-Pro · FinanceHarness",    ref: FG_REF.harness,    overall: 35.0, hindsight: 50.5, foresight: 11.5, se: 0.8 },
   { system: "Gemini-3-Flash · FinanceHarness",    ref: FG_REF.harness,    overall: 34.9, hindsight: 50.4, foresight: 10.6, se: 0.8 },
+  { system: "Gemini-3.5-Flash-Lite · FinanceHarness", ref: FG_REF.harness, overall: 34.2, hindsight: 48.6, foresight: 11.7, se: 0.9 },
   { system: "Claude-Opus-4.7 · ReAct",            ref: FG_REF.react,      overall: 34.1, hindsight: 50.1, foresight: 9.9,  se: 0.8 },
   { system: "Gemini-3.1-Pro · ReAct",             ref: FG_REF.react,      overall: 33.2, hindsight: 46.8, foresight: 12.8, se: 0.7 },
   { system: "Qwen3.6-27B · FinanceHarness",       ref: FG_REF.harness,    overall: 32.4, hindsight: 45.7, foresight: 11.8, se: 0.8 },
