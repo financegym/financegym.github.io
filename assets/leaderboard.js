@@ -20,7 +20,8 @@ var FG_REF = {
   deepagents: { name: "deepagents",     url: "https://github.com/hwchase17/deepagents" },
   tongyi:     { name: "Tongyi-DR",      url: "https://arxiv.org/pdf/2510.24701" },
   openres:    { name: "OpenResearcher", url: "https://arxiv.org/pdf/2603.20278" },
-  miro:       { name: "MiroThinker",    url: "https://arxiv.org/pdf/2603.15726" }
+  miro:       { name: "MiroThinker",    url: "https://arxiv.org/pdf/2603.15726" },
+  remo:       { name: "ReMo",           url: "https://github.com/quanwei0/ReMo" }
 };
 
 window.FG_LEADERBOARD = [
@@ -32,9 +33,11 @@ window.FG_LEADERBOARD = [
   { system: "Gemini-3.5-Flash-Lite · FinanceHarness", ref: FG_REF.harness, overall: 34.2, hindsight: 48.6, foresight: 11.7, se: 0.9 },
   { system: "Claude-Opus-4.7 · ReAct",            ref: FG_REF.react,      overall: 34.1, hindsight: 50.1, foresight: 9.9,  se: 0.8 },
   { system: "Gemini-3.1-Pro · ReAct",             ref: FG_REF.react,      overall: 33.2, hindsight: 46.8, foresight: 12.8, se: 0.7 },
+  { system: "gpt-oss-120b · ReMo",               ref: FG_REF.remo,       overall: 32.8, hindsight: 48.1, foresight: 9.0,  se: 0.9,
+    contrib: "Quan Wei (University of Minnesota & Morgan Stanley)" },
   { system: "Qwen3.6-27B · FinanceHarness",       ref: FG_REF.harness,    overall: 32.4, hindsight: 45.7, foresight: 11.8, se: 0.8 },
   { system: "gpt-oss-120b · FinanceHarness",      ref: FG_REF.harness,    overall: 31.9, hindsight: 47.0, foresight: 8.1,  se: 0.7,
-    contrib: "Quan Wei (University of Minnesota)" },
+    contrib: "Quan Wei (University of Minnesota & Morgan Stanley)" },
   { system: "GPT-5.5 · ReAct",                    ref: FG_REF.react,      overall: 31.8, hindsight: 47.5, foresight: 8.0,  se: 0.7 },
   { system: "Gemini-3-Flash · TTD-DR",            ref: FG_REF.ttddr,      overall: 31.5, hindsight: 45.5, foresight: 9.8,  se: 0.7 },
   { system: "GLM-5 · ReAct",                      ref: FG_REF.react,      overall: 30.4, hindsight: 44.7, foresight: 8.5,  se: 0.9 },
